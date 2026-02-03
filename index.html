@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Видео</title>
+    <style>
+        * { margin: 0; padding: 0; }
+        body, html {
+            width: 100%; height: 100%;
+            background: #000; overflow: hidden;
+        }
+        #videoContainer {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            display: flex; justify-content: center; align-items: center;
+            background: #000; cursor: pointer;
+            touch-action: manipulation; /* Для мобильных */
+        }
+        video {
+            max-width: 100%; max-height: 100%;
+            width: auto; height: auto;
+            object-fit: contain;
+        }
+        #playButton {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120px; height: 120px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            z-index: 10;
+        }
+        /* Треугольник УДАЛЕН полностью */
+    </style>
+</head>
+<body>
+    <div id="videoContainer">
+        <video id="myVideo" muted playsinline autoplay loop>
+            <source src="Honkai.mp4" type="video/mp4">
+        </video>
+        <button id="playButton" aria-label="Воспроизвести с звуком"></button>
+    </div>
+
+    <script>
+        const video = document.getElementById('myVideo');
+        const playButton = document.getElementById('playButton');
+        
+        video.play().catch(e => console.log('Autoplay blocked'));
+
+        // Универсальный обработчик для всех устройств
+        function playWithSound() {
+            video.muted = false;
+            playButton.style.display = 'none';
+            
+            const container = document.getElementById('videoContainer');
+            if (container.requestFullscreen) container.requestFullscreen();
+        }
+
+        // Клик/тап по кнопке
+        playButton.addEventListener('click', playWithSound);
+        playButton.addEventListener('touchstart', playWithSound, { passive: false });
+
+        // Клик/тап по всему контейнеру
+        document.getElementById('videoContainer').addEventListener('click', playWithSound);
+        document.getElementById('videoContainer').addEventListener('touchstart', playWithSound, { passive: false });
+    </script>
+</body>
+</html>

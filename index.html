@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Honkai</title>
+    <title>Видео</title>
     <style>
         * { margin: 0; padding: 0; }
         body, html {
@@ -15,7 +15,6 @@
             width: 100%; height: 100%;
             display: flex; justify-content: center; align-items: center;
             background: #000; cursor: pointer;
-            touch-action: manipulation;
         }
         video {
             max-width: 100%; max-height: 100%;
@@ -26,11 +25,21 @@
             position: absolute;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            width: 120px; height: 120px;
+            width: 100px; height: 100px;
             background: transparent;
             border: none;
             cursor: pointer;
             z-index: 10;
+        }
+        /* Полностью прозрачный плей - невидимый */
+        #playButton::before {
+            content: '▶';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 40px;
+            color: rgba(255,255,255,0);
+            /* НЕВИДИМЫЙ */
         }
     </style>
 </head>
@@ -45,41 +54,25 @@
     <script>
         const video = document.getElementById('myVideo');
         const playButton = document.getElementById('playButton');
-        let isActivated = false; // Флаг активации
         
         video.play().catch(e => console.log('Autoplay blocked'));
 
-        function activateVideo() {
-            if (isActivated) return; // Уже активировано
+        playButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
             
             video.muted = false;
             playButton.style.display = 'none';
-            isActivated = true;
             
-            // Fullscreen
             const container = document.getElementById('videoContainer');
-            if (container.requestFullscreen) {
-                container.requestFullscreen().catch(e => console.log('Fullscreen blocked'));
+            if (container.requestFullscreen) container.requestFullscreen();
+        });
+
+        document.getElementById('videoContainer').addEventListener('click', function() {
+            if (playButton.style.display !== 'none') {
+                playButton.click();
             }
-        }
-
-        // Только ПЕРВЫЙ клик/тап активирует
-        function handleFirstInteraction(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            activateVideo();
-        }
-
-        playButton.addEventListener('click', handleFirstInteraction, { once: true });
-        playButton.addEventListener('touchstart', handleFirstInteraction, { once: true, passive: false });
-
-        document.getElementById('videoContainer').addEventListener('click', function(e) {
-            if (!isActivated) handleFirstInteraction(e);
-        }, { once: true });
-
-        document.getElementById('videoContainer').addEventListener('touchstart', function(e) {
-            if (!isActivated) handleFirstInteraction(e);
-        }, { once: true, passive: false });
+        });
     </script>
 </body>
 </html>
